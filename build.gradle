@@ -1,0 +1,34 @@
+apply plugin: 'java'
+
+sourceCompatibility = 1.5
+version = '1.0'
+
+repositories {
+    mavenCentral()
+
+
+        maven {url "https://repo.eclipse.org/content/repositories/paho-releases/"}
+
+
+
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile 'org.eclipse.paho:mqtt-client:0.4.0'
+}
+
+task benchmark(type: JavaExec){
+    def numClients  = project.hasProperty('numClients') == false  ? '10'  : project.properties['numClients']
+    def mac         = project.hasProperty('mac') == false  ? '001F480A2409'  : project.properties['mac']
+    def host        = project.hasProperty('host') == false  ? '10.100.1.195'  : project.properties['host']
+    def idStart     = project.hasProperty('idStart') == false     ? '1' : project.properties['idStart']
+    def idEnd       = project.hasProperty('idEnd') == false       ? '100': project.properties['idEnd']
+    def numMessages = project.hasProperty('numMessages') == false ? '200' : project.properties['numMessages']
+    def sleepMillis = project.hasProperty('sleepMillis') == false ? '1000' : project.properties['sleepMillis']
+
+    main = "Benchmarking"
+    args = [numClients,mac,host,idStart,idEnd,numMessages,sleepMillis]
+    classpath = sourceSets.main.runtimeClasspath
+    systemProperties = System.properties
+}
