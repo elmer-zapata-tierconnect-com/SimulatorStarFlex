@@ -2,10 +2,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
 
-import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
+import org.eclipse.paho.client.mqttv3.*;
+
+import org.eclipse.paho.client.mqttv3.internal.wire.MqttReceivedMessage;
 
 
 /**
@@ -34,6 +33,8 @@ public class Benchmarking {
         SimpleDateFormat format = new SimpleDateFormat("EEE MMM dd HH:mm:ss SSS");
 
         MqttAsyncClient client[] = new MqttAsyncClient[NUM_CLIENTS];
+        //MqttAsyncClient clientSub = new MqttAsyncClient("tcp://"+ HOST + ":" + 1883,System.currentTimeMillis()+"");
+        MqttAsyncClient clientPub = new MqttAsyncClient("tcp://"+ HOST + ":" + 1883,System.currentTimeMillis()+"");
         for (int i = 0; i < client.length; i++) {
             String clientId = System.currentTimeMillis() + "";
             client[i] = new MqttAsyncClient("tcp://"
@@ -59,14 +60,33 @@ public class Benchmarking {
 
         System.out.println(" Time Begin. " + format.format(now));
 
+        clientPub.connect();
+        while (clientPub.isConnected() == false) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        String message2 ="{\"statusCode\": 200,\"uuid\":\"12345\",\"body\": [\"default_vizix_subscription\"]}";
+        MqttMessage mqttMessage2 = new MqttMessage(message2.getBytes());
+        try {
+            clientPub.publish("/v1/flex/" + macId + "/response", mqttMessage2);
+
+        } catch (MqttPersistenceException e) {
+            // TODO Auto-generated catch block
+
+            e.printStackTrace();
+        }
         for (int i1 = 0; i1 < NUM_MESSAGES; i1++) {
             for (int i = THING_ID_START; i <= THING_ID_END && i1 < NUM_MESSAGES; i++) {
 
-                message = "[{\"type\":\"TagReadData\",\"timestamp\":" + System.currentTimeMillis() + ",\"seqNum\":155899,\"txAntennaPort\":\"PORT_1\"," +
-                        "\"txExpanderPort\":\"NONE\",\"transmitSource\":\"INTERNAL\",\"data\":\"0x3000"+i+"2426A\"}]";
+                message ="[{\"type\":\"TagReadData\",\"timestamp\":"+System.currentTimeMillis()+",\"seqNum\":587775,\"txAntennaPort\":\"PORT_1\",\"txExpanderPort\":\"NONE\",\"transmitSource\":\"INTERNAL\",\"data\":\"0x3000"+String.format("%021d",i)+"426A\"}]";
                 MqttMessage mqttMessage = new MqttMessage(message.getBytes());
                 try {
                     client[i % NUM_CLIENTS].publish("/v1/flex/" + macId + "/data", mqttMessage);
+
                     i1++;
 
                 } catch (MqttPersistenceException e) {
