@@ -22,11 +22,11 @@ mainClassName = "Benchmarking"
 
 task benchmark(type: JavaExec){
     def numClients  = project.hasProperty('numClients') == false  ? '10'  : project.properties['numClients']
-    def mac         = project.hasProperty('mac') == false  ? '001F480A2412'  : project.properties['mac']
-    def host        = project.hasProperty('host') == false  ? '10.100.0.234'  : project.properties['host']
+    def mac         = project.hasProperty('mac') == false  ? '001F480A2312'  : project.properties['mac']
+    def host        = project.hasProperty('host') == false  ? '10.100.1.195'  : project.properties['host']
     def idStart     = project.hasProperty('idStart') == false     ? '1' : project.properties['idStart']
-    def idEnd       = project.hasProperty('idEnd') == false       ? '100': project.properties['idEnd']
-    def numMessages = project.hasProperty('numMessages') == false ? '200' : project.properties['numMessages']
+    def idEnd       = project.hasProperty('idEnd') == false       ? '4000': project.properties['idEnd']
+    def numMessages = project.hasProperty('numMessages') == false ? '259200' : project.properties['numMessages']
     def sleepMillis = project.hasProperty('sleepMillis') == false ? '1000' : project.properties['sleepMillis']
 
     main = "Benchmarking"

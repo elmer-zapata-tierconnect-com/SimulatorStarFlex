@@ -10,16 +10,28 @@ import org.eclipse.paho.client.mqttv3.internal.wire.MqttReceivedMessage;
 /**
  * Created by ezapata on 21-Mar-16.
  */
+
 public class Benchmarking {
+    public static String buildMessage(int cant, String timestamp, int i) {
+        String res="[";
+        for (int j = 1; j <cant ; j++) {
+            res+="{\"type\":\"TagReadData\",\"timestamp\":" + timestamp + ",\"seqNum\":587775,\"txAntennaPort\":\"PORT_1\",\"txExpanderPort\":\"NONE\",\"transmitSource\":\"INTERNAL\",\"data\":\"0x3000" + String.format("%021d", i*j) + "426A\"},";
+        }
+        res+="{\"type\":\"TagReadData\",\"timestamp\":" + timestamp + ",\"seqNum\":587775,\"txAntennaPort\":\"PORT_1\",\"txExpanderPort\":\"NONE\",\"transmitSource\":\"INTERNAL\",\"data\":\"0x3000" + String.format("%021d", i*cant) + "426A\"}";
+        res+="]";
+
+    return res;
+    }
+
     public static void main(String[] args) throws MqttException {
 
-                		int NUM_CLIENTS = Integer.parseInt(args[0]);
-                        String macId=args[1];
-                		String HOST=args[2];
-                int THING_ID_START = Integer.parseInt(args[3]);
-        		int THING_ID_END = Integer.parseInt(args[4]);
-        		int NUM_MESSAGES =Integer.parseInt(args[5]);
-        		int SLEEP =Integer.parseInt(args[6]);
+        int NUM_CLIENTS = Integer.parseInt(args[0]);
+        String macId = args[1];
+        String HOST = args[2];
+        int THING_ID_START = Integer.parseInt(args[3]);
+        int THING_ID_END = Integer.parseInt(args[4]);
+        int NUM_MESSAGES = Integer.parseInt(args[5]);
+        int SLEEP = Integer.parseInt(args[6]);
 
        /* Scanner lee = new Scanner(System.in);
         String macId = lee.next();
@@ -34,7 +46,7 @@ public class Benchmarking {
 
         MqttAsyncClient client[] = new MqttAsyncClient[NUM_CLIENTS];
         //MqttAsyncClient clientSub = new MqttAsyncClient("tcp://"+ HOST + ":" + 1883,System.currentTimeMillis()+"");
-        MqttAsyncClient clientPub = new MqttAsyncClient("tcp://"+ HOST + ":" + 1883,System.currentTimeMillis()+"");
+        MqttAsyncClient clientPub = new MqttAsyncClient("tcp://" + HOST + ":" + 1883, System.currentTimeMillis() + "");
         for (int i = 0; i < client.length; i++) {
             String clientId = System.currentTimeMillis() + "";
             client[i] = new MqttAsyncClient("tcp://"
@@ -69,7 +81,7 @@ public class Benchmarking {
                 e.printStackTrace();
             }
         }
-        String message2 ="{\"statusCode\": 200,\"uuid\":\"12345\",\"body\": [\"default_vizix_subscription\"]}";
+        String message2 = "{\"statusCode\": 200,\"uuid\":\"12345\",\"body\": [\"default_vizix_subscription\"]}";
         MqttMessage mqttMessage2 = new MqttMessage(message2.getBytes());
         try {
             clientPub.publish("/v1/flex/" + macId + "/response", mqttMessage2);
@@ -79,10 +91,12 @@ public class Benchmarking {
 
             e.printStackTrace();
         }
+        int c=1;
         for (int i1 = 0; i1 < NUM_MESSAGES; i1++) {
             for (int i = THING_ID_START; i <= THING_ID_END && i1 < NUM_MESSAGES; i++) {
 
-                message ="[{\"type\":\"TagReadData\",\"timestamp\":"+System.currentTimeMillis()+",\"seqNum\":587775,\"txAntennaPort\":\"PORT_1\",\"txExpanderPort\":\"NONE\",\"transmitSource\":\"INTERNAL\",\"data\":\"0x3000"+String.format("%021d",i)+"426A\"}]";
+               // message = "[{\"type\":\"TagReadData\",\"timestamp\":" + System.currentTimeMillis() + ",\"seqNum\":587775,\"txAntennaPort\":\"PORT_1\",\"txExpanderPort\":\"NONE\",\"transmitSource\":\"INTERNAL\",\"data\":\"0x3000" + String.format("%021d", i) + "426A\"}]";
+                message=buildMessage(500,System.currentTimeMillis()+"",c);c++;
                 MqttMessage mqttMessage = new MqttMessage(message.getBytes());
                 try {
                     client[i % NUM_CLIENTS].publish("/v1/flex/" + macId + "/data", mqttMessage);
@@ -116,6 +130,9 @@ public class Benchmarking {
         double res = (double) (THING_ID_END - THING_ID_START) / time;
 
         System.out.printf(" is sending %d msg %.4f by second %n  ", NUM_MESSAGES, res);
+        for (int i = 0; i < client.length; i++)client[i].close();
+
+        clientPub.close();
 
     }
 }
