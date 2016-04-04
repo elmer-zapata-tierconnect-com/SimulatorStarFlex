@@ -23,14 +23,15 @@ mainClassName = "Benchmarking"
 task benchmark(type: JavaExec){
     def numClients  = project.hasProperty('numClients') == false  ? '10'  : project.properties['numClients']
     def mac         = project.hasProperty('mac') == false  ? '001F480A2312'  : project.properties['mac']
-    def host        = project.hasProperty('host') == false  ? '10.100.1.195'  : project.properties['host']
-    def idStart     = project.hasProperty('idStart') == false     ? '1' : project.properties['idStart']
-    def idEnd       = project.hasProperty('idEnd') == false       ? '4000': project.properties['idEnd']
-    def numMessages = project.hasProperty('numMessages') == false ? '259200' : project.properties['numMessages']
+    def host        = project.hasProperty('host') == false  ? 'starflex.vizixcloud.com'  : project.properties['host']
+    def idStart     = project.hasProperty('idStart') == false     ? '60000' : project.properties['idStart']
+    def idEnd       = project.hasProperty('idEnd') == false       ? '60010': project.properties['idEnd']
+    def numMessages = project.hasProperty('numMessages') == false ? '10' : project.properties['numMessages']
     def sleepMillis = project.hasProperty('sleepMillis') == false ? '1000' : project.properties['sleepMillis']
+    def freq = project.hasProperty('freq') == false ? '100' : project.properties['freq']
 
     main = "Benchmarking"
-    args = [numClients,mac,host,idStart,idEnd,numMessages,sleepMillis]
+    args = [numClients,mac,host,idStart,idEnd,numMessages,sleepMillis,freq]
     classpath = sourceSets.main.runtimeClasspath
     systemProperties = System.properties
 }

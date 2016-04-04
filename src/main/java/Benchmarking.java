@@ -12,15 +12,17 @@ import org.eclipse.paho.client.mqttv3.internal.wire.MqttReceivedMessage;
  */
 
 public class Benchmarking {
-    public static String buildMessage(int cant, String timestamp, int i) {
-        String res="[";
-        for (int j = 1; j <cant ; j++) {
-            res+="{\"type\":\"TagReadData\",\"timestamp\":" + timestamp + ",\"seqNum\":587775,\"txAntennaPort\":\"PORT_1\",\"txExpanderPort\":\"NONE\",\"transmitSource\":\"INTERNAL\",\"data\":\"0x3000" + String.format("%021d", i*j) + "426A\"},";
+    public static String buildMessage(int cant, String timestamp, int i, int start) {
+        String res = "[";
+        String as[] = {"PORT_1", "PORT_2", "PORT_3", "PORT_4"};
+        for (int j = start; j < start + cant; j++) {
+            System.out.print(j + " ");
+            res += "{\"type\":\"TagReadData\",\"timestamp\":" + timestamp + ",\"seqNum\":587775,\"txAntennaPort\":\"" + as[j % 4] + "\",\"txExpanderPort\":\"NONE\",\"transmitSource\":\"INTERNAL\",\"data\":\"0x3000" + String.format("%021d", j) + "426A\"},";
         }
-        res+="{\"type\":\"TagReadData\",\"timestamp\":" + timestamp + ",\"seqNum\":587775,\"txAntennaPort\":\"PORT_1\",\"txExpanderPort\":\"NONE\",\"transmitSource\":\"INTERNAL\",\"data\":\"0x3000" + String.format("%021d", i*cant) + "426A\"}";
-        res+="]";
+        res += "{\"type\":\"TagReadData\",\"timestamp\":" + timestamp + ",\"seqNum\":587775,\"txAntennaPort\":\"" + as[0] + "\",\"txExpanderPort\":\"NONE\",\"transmitSource\":\"INTERNAL\",\"data\":\"0x3000" + String.format("%021d", cant + i) + "426A\"}";
+        res += "]";
 
-    return res;
+        return res;
     }
 
     public static void main(String[] args) throws MqttException {
@@ -32,6 +34,7 @@ public class Benchmarking {
         int THING_ID_END = Integer.parseInt(args[4]);
         int NUM_MESSAGES = Integer.parseInt(args[5]);
         int SLEEP = Integer.parseInt(args[6]);
+        int FREQ = Integer.parseInt(args[7]);
 
        /* Scanner lee = new Scanner(System.in);
         String macId = lee.next();
@@ -91,34 +94,39 @@ public class Benchmarking {
 
             e.printStackTrace();
         }
-        int c=1;
-        for (int i1 = 0; i1 < NUM_MESSAGES; i1++) {
-            for (int i = THING_ID_START; i <= THING_ID_END && i1 < NUM_MESSAGES; i++) {
+        int idStart = THING_ID_START;
+        for (int i1 = 1; i1 <= NUM_MESSAGES; i1++) {
 
-               // message = "[{\"type\":\"TagReadData\",\"timestamp\":" + System.currentTimeMillis() + ",\"seqNum\":587775,\"txAntennaPort\":\"PORT_1\",\"txExpanderPort\":\"NONE\",\"transmitSource\":\"INTERNAL\",\"data\":\"0x3000" + String.format("%021d", i) + "426A\"}]";
-                message=buildMessage(500,System.currentTimeMillis()+"",c);c++;
-                MqttMessage mqttMessage = new MqttMessage(message.getBytes());
-                try {
-                    client[i % NUM_CLIENTS].publish("/v1/flex/" + macId + "/data", mqttMessage);
+            int c = 0;
 
-                    i1++;
-
-                } catch (MqttPersistenceException e) {
-                    // TODO Auto-generated catch block
-
-                    e.printStackTrace();
-                } catch (MqttException e) {
-                    // TODO Auto-generated catch block
-
-                    e.printStackTrace();
-                }
-                try {
-                    Thread.sleep(SLEEP);
-                } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+            message = buildMessage(FREQ, System.currentTimeMillis() + "", c, idStart);
+            c = c + FREQ;
+            idStart += FREQ;
+            if (c >= THING_ID_END - THING_ID_START) {
+                c = 0;idStart=THING_ID_START;
             }
+            MqttMessage mqttMessage = new MqttMessage(message.getBytes());
+            try {
+                client[0].publish("/v1/flex/" + macId + "/data", mqttMessage);
+
+
+
+            } catch (MqttPersistenceException e) {
+                // TODO Auto-generated catch block
+
+                e.printStackTrace();
+            } catch (MqttException e) {
+                // TODO Auto-generated catch block
+
+                e.printStackTrace();
+            }
+            try {
+                Thread.sleep(SLEEP);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
         }
 
 
@@ -130,7 +138,7 @@ public class Benchmarking {
         double res = (double) (THING_ID_END - THING_ID_START) / time;
 
         System.out.printf(" is sending %d msg %.4f by second %n  ", NUM_MESSAGES, res);
-        for (int i = 0; i < client.length; i++)client[i].close();
+        for (int i = 0; i < client.length; i++) client[i].close();
 
         clientPub.close();
 
