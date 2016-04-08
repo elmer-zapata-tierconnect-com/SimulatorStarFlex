@@ -12,14 +12,14 @@ import org.eclipse.paho.client.mqttv3.internal.wire.MqttReceivedMessage;
  */
 
 public class Benchmarking {
-    public static String buildMessage(int cant, String timestamp, int i, int start) {
+    public static String buildMessage(int cant, String timestamp,  int start) {
         String res = "[";
         String as[] = {"PORT_1", "PORT_2", "PORT_3", "PORT_4"};
-        for (int j = start; j < start + cant; j++) {
+        for (int j = start; j < (start + cant-1); j++) {
             System.out.print(j + " ");
             res += "{\"type\":\"TagReadData\",\"timestamp\":" + timestamp + ",\"seqNum\":587775,\"txAntennaPort\":\"" + as[j % 4] + "\",\"txExpanderPort\":\"NONE\",\"transmitSource\":\"INTERNAL\",\"data\":\"0x3000" + String.format("%021d", j) + "426A\"},";
         }
-        res += "{\"type\":\"TagReadData\",\"timestamp\":" + timestamp + ",\"seqNum\":587775,\"txAntennaPort\":\"" + as[0] + "\",\"txExpanderPort\":\"NONE\",\"transmitSource\":\"INTERNAL\",\"data\":\"0x3000" + String.format("%021d", cant + i) + "426A\"}";
+        res += "{\"type\":\"TagReadData\",\"timestamp\":" + timestamp + ",\"seqNum\":587775,\"txAntennaPort\":\"" + as[0] + "\",\"txExpanderPort\":\"NONE\",\"transmitSource\":\"INTERNAL\",\"data\":\"0x3000" + String.format("%021d",(start+cant)-1) + "426A\"}";
         res += "]";
 
         return res;
@@ -97,13 +97,13 @@ public class Benchmarking {
         int idStart = THING_ID_START;
         for (int i1 = 1; i1 <= NUM_MESSAGES; i1++) {
 
-            int c = 0;
 
-            message = buildMessage(FREQ, System.currentTimeMillis() + "", c, idStart);
-            c = c + FREQ;
+
+            message = buildMessage(FREQ, System.currentTimeMillis() + "", idStart);
+
             idStart += FREQ;
-            if (c >= THING_ID_END - THING_ID_START) {
-                c = 0;idStart=THING_ID_START;
+            if (idStart >= THING_ID_END) {
+                idStart=THING_ID_START;
             }
             MqttMessage mqttMessage = new MqttMessage(message.getBytes());
             try {
