@@ -21,6 +21,7 @@ public class Benchmarking {
         }
         res += "{\"type\":\"TagReadData\",\"timestamp\":" + timestamp + ",\"seqNum\":587775,\"txAntennaPort\":\"" + as[0] + "\",\"txExpanderPort\":\"NONE\",\"transmitSource\":\"INTERNAL\",\"data\":\"0x3000" + String.format("%021d",(start+cant)-1) + "426A\"}";
         res += "]";
+        System.out.println();
 
         return res;
     }
