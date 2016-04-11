@@ -17,7 +17,7 @@ public class Benchmarking {
         String as[] = {"PORT_1", "PORT_2", "PORT_3", "PORT_4"};
         for (int j = start; j < (start + cant-1); j++) {
             System.out.print(j + " ");
-            res += "{\"type\":\"TagReadData\",\"timestamp\":" + timestamp + ",\"seqNum\":587775,\"txAntennaPort\":\"" + as[j % 4] + "\",\"txExpanderPort\":\"NONE\",\"transmitSource\":\"INTERNAL\",\"data\":\"0x3000" + String.format("%021d", j) + "426A\"},";
+            res += "{\"type\":\"TagReadData\",\"timestamp\":" + timestamp + ",\"seqNum\":587775,\"txAntennaPort\":\"" + as[(j*(int)(Math.random()*4)) % 4] + "\",\"txExpanderPort\":\"NONE\",\"transmitSource\":\"INTERNAL\",\"data\":\"0x3000" + String.format("%021d", j) + "426A\"},";
         }
         res += "{\"type\":\"TagReadData\",\"timestamp\":" + timestamp + ",\"seqNum\":587775,\"txAntennaPort\":\"" + as[0] + "\",\"txExpanderPort\":\"NONE\",\"transmitSource\":\"INTERNAL\",\"data\":\"0x3000" + String.format("%021d",(start+cant)-1) + "426A\"}";
         res += "]";

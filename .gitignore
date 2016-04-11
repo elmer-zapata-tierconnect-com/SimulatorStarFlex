@@ -4,3 +4,4 @@ SimulatorStarFlex.iml
 /gradle
 *-tcp*
 /build
+build.gradle
