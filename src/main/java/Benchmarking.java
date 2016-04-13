@@ -102,7 +102,7 @@ public class Benchmarking {
 
            // System.out.println(" Time Begin. " + format.format(now));
 
-            message = buildMessage(FREQ, now1.getTime()+"", idStart);
+            message = buildMessage(FREQ, now1.toGMTString(), idStart);
 
             idStart += FREQ;
             if (idStart >= THING_ID_END) {
