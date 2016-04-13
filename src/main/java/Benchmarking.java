@@ -98,9 +98,11 @@ public class Benchmarking {
         int idStart = THING_ID_START;
         for (int i1 = 1; i1 <= NUM_MESSAGES; i1++) {
 
+            Date now1 = new Date();
 
+           // System.out.println(" Time Begin. " + format.format(now));
 
-            message = buildMessage(FREQ, System.currentTimeMillis() + "", idStart);
+            message = buildMessage(FREQ, now1.getTime()+"", idStart);
 
             idStart += FREQ;
             if (idStart >= THING_ID_END) {
