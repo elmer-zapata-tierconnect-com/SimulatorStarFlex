@@ -17,12 +17,12 @@ public class Benchmarking {
         String res = "[";
         String as[] = {"PORT_1", "PORT_2", "PORT_3", "PORT_4"};
         for (int j = start; j < (start + cant - 1); j++) {
-            System.out.print(String.format("%03d",index)+String.format("%018d", j));
+           // System.out.print(String.format("%03d",index)+String.format("%018d", j));
             res += "{\"type\":\"TagReadData\",\"timestamp\":" + timestamp + ",\"seqNum\":587775,\"txAntennaPort\":\"" + as[(j) % 4] + "\",\"txExpanderPort\":\"NONE\",\"transmitSource\":\"INTERNAL\",\"data\":\"0x3000"+"AUTO" + String.format("%03d",index)+String.format("%014d", j) + "426A\",\"alias\":\"test\"},";
         }
         res += "{\"type\":\"TagReadData\",\"timestamp\":" + timestamp + ",\"seqNum\":587775,\"txAntennaPort\":\"" + as[(int)(Math.random()*4)] + "\",\"txExpanderPort\":\"NONE\",\"transmitSource\":\"INTERNAL\",\"data\":\"0x3000"+"AUTO"+ String.format("%03d",index) + String.format("%014d", (start + cant) - 1) + "426A\",\"alias\":\"test\"}";
         res += "]";
-        System.out.println();
+        //System.out.println();
 
         return res;
     }
@@ -141,11 +141,11 @@ public class Benchmarking {
 //        int SLEEP = Integer.parseInt(args[6]);
 //        int FREQ = Integer.parseInt(args[7]);
         String HOST = "10.100.1.195";
-        int THING_ID_START = 1;
-        int THING_ID_END = 57;
-        int NUM_MESSAGES = 100;
-        int SLEEP = 1000;
-        int FREQ = 5;
+        int THING_ID_START = 100;
+        int THING_ID_END = 200;
+        int NUM_MESSAGES = 200;
+        int SLEEP = 200;
+        int FREQ = 10;
         String message[] = new String[NUM_CLIENTS];
         long time_start, time_end, time;
         SimpleDateFormat format = new SimpleDateFormat("EEE MMM dd HH:mm:ss SSS");
@@ -174,10 +174,7 @@ public class Benchmarking {
             }
         }
 
-        time_start = System.currentTimeMillis();
-        Date now = new Date();
 
-        System.out.println(" Time Begin. " + format.format(now));
 
         clientPub.connect();
         while (clientPub.isConnected() == false) {
@@ -202,6 +199,10 @@ public class Benchmarking {
             if (idStart >= THING_ID_END) {
                 idStart = THING_ID_START;
             }
+            time_start = System.currentTimeMillis();
+            Date now = new Date();
+
+            System.out.println(" Time Begin. "+i1+"  " + format.format(now));
             for (int i = 0; i < NUM_CLIENTS; i++) {
                 message[i] = buildMessage(i,FREQ, now1.getTime() + "", idStart);
             }
@@ -212,6 +213,12 @@ public class Benchmarking {
                     MqttMessage mqttMessage = new MqttMessage(message[i].getBytes());
                     client[i].publish("/v1/flex/" + macId[i] + "/data", mqttMessage);
                 }
+                Date out = new Date();
+                System.out.println(" Time end. "+i1+" " + format.format(out));
+                time_end = System.currentTimeMillis();
+                time = time_end - time_start;
+                //System.out.println("time=>" + time);
+
 
             } catch (MqttPersistenceException e) {
                 // TODO Auto-generated catch block
@@ -232,14 +239,10 @@ public class Benchmarking {
         }
 
 
-        Date out = new Date();
-        System.out.println(" Time end. " + format.format(out));
-        time_end = System.currentTimeMillis();
-        time = time_end - time_start;
-        System.out.println("time=>" + time);
-        double res = (double) (THING_ID_END - THING_ID_START) / time;
 
-        System.out.printf(" is sending %d msg %.4f by second %n  ", NUM_MESSAGES, res);
+       // double res = (double) (THING_ID_END - THING_ID_START) / time;
+
+     //   System.out.printf(" is sending %d msg %.4f by second %n  ", NUM_MESSAGES, res);
         for (int i = 0; i < client.length; i++) client[i].close();
 
         clientPub.close();
