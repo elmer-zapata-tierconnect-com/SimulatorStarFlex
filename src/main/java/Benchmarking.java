@@ -199,36 +199,32 @@ public class Benchmarking {
             if (idStart >= THING_ID_END) {
                 idStart = THING_ID_START;
             }
-            time_start = System.currentTimeMillis();
-            Date now = new Date();
 
-            System.out.println(" Time Begin. "+i1+"  " + format.format(now));
             for (int i = 0; i < NUM_CLIENTS; i++) {
                 message[i] = buildMessage(i,FREQ, now1.getTime() + "", idStart);
             }
 
-            try {
+            time_start = System.currentTimeMillis();
+            Date now = new Date();
+            System.out.println(" Time Begin. "+i1+"  " + format.format(now));
 
-                for (int i = 0; i < NUM_CLIENTS; i++) {
-                    MqttMessage mqttMessage = new MqttMessage(message[i].getBytes());
-                    client[i].publish("/v1/flex/" + macId[i] + "/data", mqttMessage);
-                }
-                Date out = new Date();
-                System.out.println(" Time end. "+i1+" " + format.format(out));
-                time_end = System.currentTimeMillis();
-                time = time_end - time_start;
-                //System.out.println("time=>" + time);
-
-
-            } catch (MqttPersistenceException e) {
-                // TODO Auto-generated catch block
-
-                e.printStackTrace();
-            } catch (MqttException e) {
-                // TODO Auto-generated catch block
-
-                e.printStackTrace();
+            for (int i = 0; i < NUM_CLIENTS; i++) {
+                final int finalI = i;
+                new Thread(() ->{ MqttMessage mqttMessage = new MqttMessage(message[finalI].getBytes());
+                    try {
+                        client[finalI].publish("/v1/flex/" + macId[finalI] + "/data", mqttMessage);
+                    } catch (MqttException e) {
+                        e.printStackTrace();
+                    }
+                });
             }
+            Date out = new Date();
+            System.out.println(" Time end. "+i1+" " + format.format(out));
+            time_end = System.currentTimeMillis();
+            time = time_end - time_start;
+            //System.out.println("time=>" + time);
+
+
             try {
                 Thread.sleep(SLEEP);
             } catch (InterruptedException e) {
