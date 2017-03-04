@@ -141,9 +141,9 @@ public class Benchmarking {
 //        int SLEEP = Integer.parseInt(args[6]);
 //        int FREQ = Integer.parseInt(args[7]);
         String HOST = "10.100.1.195";
-        int THING_ID_START = 100;
-        int THING_ID_END = 200;
-        int NUM_MESSAGES = 200;
+        int THING_ID_START = 200;
+        int THING_ID_END = 300;
+        int NUM_MESSAGES = 500;
         int SLEEP = 200;
         int FREQ = 10;
         String message[] = new String[NUM_CLIENTS];
@@ -216,7 +216,7 @@ public class Benchmarking {
                     } catch (MqttException e) {
                         e.printStackTrace();
                     }
-                });
+                }).start();
             }
             Date out = new Date();
             System.out.println(" Time end. "+i1+" " + format.format(out));

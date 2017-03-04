@@ -9,11 +9,11 @@ public class generatorCSV {
 
     public static void main(String[]arg){
 
-        File input = new File("/home/elmer/repos/SimulatorStarFlex/cpuFile4-8.csv");
+        File input = new File("/home/elmer/repos/SimulatorStarFlex/cpuFile.csv");
         Writer writer = null;
         String resFinal="TIME"+","+"TOMCATCPU"+","+"TOMCATMEMORY"+","+"CORECPU"+","+"COREMEMORY"+"\n";
         File file = new File(".");
-        file = new File(file.getAbsolutePath() + "cpuFileConverted.csv");
+        file = new File(file.getAbsolutePath() + "cpuFileConvertedWThread.csv");
         try {
             writer = new BufferedWriter(new OutputStreamWriter(
                     new FileOutputStream(file.getAbsolutePath()), "utf-8"));

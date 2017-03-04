@@ -122,17 +122,17 @@ public class generator {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-       // for (int i = 0; i <=100 ; i++) {
-            for (int j = 0; j <macId.length; j++) {
+        for (int i = 0; i <=100 ; i++) {
+            for (int j = 200; j <=300; j++) {
 
                    System.out.print("entro");
 
-                    //String res="AUTO"+String.format("%03d",i)+String.format("%014d", j);
-                     resFinal=resFinal+"Starflex"+","+macId[j]+","+macId[j]+","+">BP>KW"+"\n";
+                    String res="AUTO"+String.format("%03d",i)+String.format("%014d", j);
+                    resFinal=resFinal+"BPKwinana"+","+res+","+res+","+">BP>KW"+"\n";
 
 
             }
-        //}
+        }
 
         try {
             writer.write(resFinal);
